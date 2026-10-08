@@ -100,7 +100,9 @@ section{display:grid;gap:12px}
 .fig{background:var(--sheet);border:1px solid var(--grid);border-radius:4px;padding:12px;display:grid;gap:6px;justify-items:center}
 .fig svg{max-width:100%;height:auto}
 .figcap{font-size:12.5px;color:var(--muted);text-align:center}
-@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.maphint{display:none;font-size:13px;color:var(--ink);background:var(--chain);border:1px solid var(--accent);border-radius:4px;padding:8px 12px;margin:0 0 8px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}.maphint{display:block}}
+.mapbox{-webkit-overflow-scrolling:touch}
 @media (prefers-reduced-motion:reduce){.node{transition:none}}
 </style>
 </head>
@@ -120,6 +122,7 @@ section{display:grid;gap:12px}
     </div>
   </div>
 
+  <p class="maphint">Geser peta ke samping untuk melihat semua kotak. Ketuk kotak untuk membaca penjelasannya.</p>
   <div class="mapbox" id="mapbox">
     <div class="scaler" id="scaler">
       <div class="stage" id="stage">
@@ -252,7 +255,7 @@ const NODES = [
   body:["n ≥ nd: desain AMAN. n < nd: TIDAK AMAN, lakukan iterasi.","Pilihan perbaikan: perbesar ukuran (d, modul, lebar gigi, jumlah baut), ganti material yang lebih kuat, atau kurangi beban.","Contoh roda gigi: daya naik ke 12 kW membuat n = 1,32 < 3. Mengganti material ke AISI 1045 CD menaikkan n menjadi 3,34 tanpa mengubah ukuran."],
   formula:"n ≥ nd   →  AMAN\nn < nd   →  ubah d / m / F / material / beban, hitung ulang",
   q:["Di antara tiga pilihan perbaikan, mana yang paling murah untuk roda gigi pada contoh 12 kW, dan mengapa?","Apakah n yang sangat besar (misalnya 88) selalu baik?"]},
- {id:"hub",kind:"hub",x:460,y:432,w:260,h:72,title:"Elemen mesin",line:"dianalisis dengan langkah 1–5 yang sama",tags:["uts","uas"],
+ {id:"hub",kind:"hub",x:460,y:426,w:260,h:84,title:"Elemen mesin",line:"dianalisis dengan langkah 1–5 yang sama",tags:["uts","uas"],
   meta:"Penghubung ke bagian komponen",
   body:["Elemen transmisi: roda gigi, sabuk-puli, rantai. Penumpu putaran: poros, pasak, bantalan. Pengikat: baut, keling, las.","Semua elemen melewati langkah 1–5 yang sama. Yang berbeda hanya rumus beban, rumus tegangan, dan nilai nd."],
   formula:"Rumus berbeda, alur sama:\n  beban → tegangan → σ' → n → keputusan",
