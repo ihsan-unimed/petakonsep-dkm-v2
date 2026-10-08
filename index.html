@@ -10,21 +10,15 @@
 <style>
 /* Layout: drafting-sheet map (fixed stage that scales to fit) above a detail panel, then a revision table and exam notes */
 :root{
-  --bg:#eceff3; --sheet:#f8f9fb; --surface:#ffffff; --ink:#15191f; --muted:#3f4752;
+  --bg:#ffffff; --sheet:#f2f5f9; --surface:#ffffff; --ink:#15191f; --muted:#3f4752;
   --line:#8c97a5; --grid:#dde2e9; --accent:#1f4fc4; --chain:#e2e9fa; --warm:#f6ead6; --warm-line:#a8641a;
   --uts:#d6e1fb; --uas:#f6e2c4;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
   --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12161c; --sheet:#171c23; --surface:#1e242d; --ink:#e9edf2; --muted:#b9c1cc;
-  --line:#6b7685; --grid:#252c36; --accent:#7ea2ff; --chain:#1f2a44; --warm:#3a2c18; --warm-line:#e0a457;
-  --uts:#24345c; --uas:#4a3518; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#12161c; --sheet:#171c23; --surface:#1e242d; --ink:#e9edf2; --muted:#b9c1cc;
-  --line:#6b7685; --grid:#252c36; --accent:#7ea2ff; --chain:#1f2a44; --warm:#3a2c18; --warm-line:#e0a457;
-  --uts:#24345c; --uas:#4a3518; color-scheme:dark}
+
+
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
 .wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:20px}
