@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roda gigi - Peta Konsep DKM</title>
+<style>
+/* Layout: drafting-sheet map (fixed stage that scales to fit) above a detail panel, then a revision table and exam notes */
+:root{
+  --bg:#eceff3; --sheet:#f8f9fb; --surface:#ffffff; --ink:#15191f; --muted:#3f4752;
+  --line:#8c97a5; --grid:#dde2e9; --accent:#1f4fc4; --chain:#e2e9fa; --warm:#f6ead6; --warm-line:#a8641a;
+  --uts:#d6e1fb; --uas:#f6e2c4;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --sheet:#171c23; --surface:#1e242d; --ink:#e9edf2; --muted:#b9c1cc;
+  --line:#6b7685; --grid:#252c36; --accent:#7ea2ff; --chain:#1f2a44; --warm:#3a2c18; --warm-line:#e0a457;
+  --uts:#24345c; --uas:#4a3518; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --sheet:#171c23; --surface:#1e242d; --ink:#e9edf2; --muted:#b9c1cc;
+  --line:#6b7685; --grid:#252c36; --accent:#7ea2ff; --chain:#1f2a44; --warm:#3a2c18; --warm-line:#e0a457;
+  --uts:#24345c; --uas:#4a3518; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:20px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0;color:var(--ink)}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.05}
+h2{font-size:24px}
+h3{font-size:19px}
+.lede{max-width:70ch;color:var(--ink);margin:6px 0 0}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters button{font:500 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:4px;padding:6px 12px;cursor:pointer}
+.filters button[aria-pressed="true"]{border-color:var(--accent);background:var(--chain)}
+.filters button:focus-visible,.node:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.mapbox{background:var(--sheet);border:1px solid var(--line);border-radius:6px;overflow-x:auto;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+.scaler{position:relative}
+.stage{position:absolute;left:0;top:0;width:1180px;height:880px;transform-origin:0 0}
+svg.edges{position:absolute;inset:0;width:1180px;height:880px;overflow:visible}
+.edge{stroke:var(--line);stroke-width:1.6;fill:none}
+.edge.loop{stroke-dasharray:6 5}
+.edge.on{stroke:var(--accent);stroke-width:2.4}
+.lbl rect{fill:var(--sheet)}
+.lbl text{font:500 11.5px var(--body);fill:var(--ink)}
+.lbl.on text{fill:var(--ink);font-weight:600}
+.lbl.on rect{fill:var(--chain)}
+.marker{fill:var(--line)} .marker.on{fill:var(--accent)}
+
+.node{position:absolute;display:flex;flex-direction:column;gap:3px;text-align:left;padding:9px 11px;border-radius:5px;
+  background:var(--surface);border:1.5px solid var(--ink);color:var(--ink);font:400 12.5px/1.35 var(--body);cursor:pointer;transition:opacity .2s,box-shadow .2s}
+.node b{font:700 16px/1.1 var(--display);letter-spacing:.01em}
+.node .f{font:400 11.5px/1.35 var(--mono)}
+.node .k{font:600 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase}
+.node.root{background:var(--ink);color:var(--surface);border-color:var(--ink);align-items:center;justify-content:center;text-align:center}
+.node.root b{font-size:20px}
+.node.chain{background:var(--chain);border-color:var(--accent)}
+.node.base{border-style:solid;border-color:var(--ink)}
+.node.comp{border-width:2px;border-color:var(--line)}
+.node.sys{background:var(--warm);border-color:var(--warm-line)}
+.node.hub{border-style:dashed;align-items:center;justify-content:center;text-align:center}
+.node.sel{box-shadow:0 0 0 3px var(--accent)}
+.node.dim{opacity:.22}
+.group{position:absolute;border:1.5px dashed var(--line);border-radius:6px}
+.group span{position:absolute;top:-10px;left:10px;background:var(--sheet);padding:0 6px;font:600 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase}
+.tags{display:flex;gap:4px;margin-top:2px}
+.tag{font:600 10px var(--body);letter-spacing:.06em;padding:1px 6px;border-radius:3px;color:var(--ink)}
+.tag.uts{background:var(--uts)} .tag.uas{background:var(--uas)}
+.node.root .tag{display:none}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px;display:grid;gap:12px}
+.panel .head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline}
+.panel .meta{font-size:13px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px}
+.cols>div{min-width:0}
+.panel ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.formula{font:400 13.5px/1.6 var(--mono);background:var(--sheet);border:1px solid var(--grid);border-radius:4px;padding:10px 12px;overflow-x:auto;white-space:pre}
+.q{border-left:3px solid var(--accent);padding-left:10px}
+.q p{margin:4px 0 0}
+.hint{font-size:13px;color:var(--muted);margin:0}
+
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13.5px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--grid)}
+th{font:600 12px var(--body);letter-spacing:.06em;text-transform:uppercase;background:var(--sheet)}
+td.m{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+
+.exam{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:grid;gap:8px;align-content:start}
+.card ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.card .tag{justify-self:start;font-size:11px;padding:2px 8px}
+section{display:grid;gap:12px}
+.foot{font-size:13px;color:var(--muted)}
+.btn{display:inline-block;font:600 13.5px var(--body);color:#fff;background:var(--accent);border-radius:5px;padding:9px 16px;text-decoration:none;margin-top:4px}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
+.navtop{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.navtop a{font:500 13px var(--body);color:var(--accent);text-decoration:none}
+.fig{background:var(--sheet);border:1px solid var(--grid);border-radius:4px;padding:12px;display:grid;gap:6px;justify-items:center}
+.fig svg{max-width:100%;height:auto}
+.figcap{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.node{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="navtop"><a href="../index.html">&larr; Kembali ke peta konsep</a><span style="flex:1"></span><a href="hub.html">&larr; Elemen mesin</a><span>·</span><a href="belt.html">Sabuk-puli &amp; rantai &rarr;</a></div>
+<div class="top"><div><h1>Roda gigi</h1><p class="lede">Pertemuan 10-11</p></div></div>
+<figure class="fig"><svg viewBox="0 0 560 300" width="560" role="img" aria-label="Roda gigi: modul sama, Lewis periksa patah lentur."><circle cx="200" cy="150" r="70" fill="white" stroke="#15191f" stroke-width="2.5"/><circle cx="200" cy="150" r="20" fill="white" stroke="#15191f" stroke-width="2"/><circle cx="370" cy="150" r="45" fill="white" stroke="#15191f" stroke-width="2.5"/><rect x="278.0" y="150.0" width="16" height="10" fill="#15191f"/><rect x="268.45143982744906" y="187.39519201112785" width="16" height="10" fill="#15191f"/><rect x="242.1435798577149" y="215.6347368150159" width="16" height="10" fill="#15191f"/><rect x="205.51750173008082" y="227.80460895511624" width="16" height="10" fill="#15191f"/><rect x="167.54054674932289" y="220.9251992924032" width="16" height="10" fill="#15191f"/><rect x="137.51079798733917" y="196.6808272401086" width="16" height="10" fill="#15191f"/><rect x="122.78058526516526" y="161.00736062866963" width="16" height="10" fill="#15191f"/><rect x="126.95637839131788" y="122.63890824020964" width="16" height="10" fill="#15191f"/><rect x="149.01579757263826" y="90.9694053659816" width="16" height="10" fill="#15191f"/><rect x="183.55792764439917" y="73.75265082212243" width="16" height="10" fill="#15191f"/><rect x="222.12565046613165" y="75.2039065762752" width="16" height="10" fill="#15191f"/><rect x="255.27624239471828" y="94.96785460550943" width="16" height="10" fill="#15191f"/><text x="280" y="270" text-anchor="middle" font-size="13">Wt = P/V - Wr = Wt tan phi</text></svg><figcaption class="figcap">Roda gigi: modul sama, Lewis periksa patah lentur.</figcaption></figure>
+<div class="panel"><div class="head"><h2>Ringkasan materi</h2><span class="meta">Pertemuan 10-11</span></div>
+<div class="cols"><div><ul><li>Modul m menentukan ukuran gigi; pasangan harus sama modul dan sudut tekan.</li><li>Wt meneruskan daya (untuk tegangan); Wr mendorong menjauh. Keduanya membebani poros/bantalan.</li><li>Gagal: patah gigi, pitting, aus. Lewis periksa patah lentur, nd~3.</li></ul></div>
+<div style="display:grid;gap:12px;align-content:start"><div class="formula">d=mN ; p=pi m ; i=N2/N1
+V=pi d n/60000 ; Wt=P/V=2T/d ; Wr=Wt tan phi
+Kv=(6,1+V)/6,1 ; sigma=Kv Wt/(F m Y) ; n=Sy/sigma</div>
+<div class="q"><strong>Pertanyaan pemandu</strong><p>Tiga cara menaikkan n tanpa ubah rasio? Konsekuensinya?</p><p>Mengapa pinion minimal 18 gigi?</p></div></div></div>
+<p><a class="btn ghost" href="../index.html">Kembali ke peta</a> <a class="btn" href="belt.html">Materi berikutnya: Sabuk-puli &amp; rantai &rarr;</a></p></div>
+<p class="foot">Disusun dari materi kuliah Desain Komponen Mesin, Prodi Pendidikan Teknik Mesin FT Unimed. Rujukan: Shigley (2015), Juvinall &amp; Marshek (2020), Mott (2018), Sularso &amp; Suga (2004).</p>
+</div>
+</body>
+</html>
